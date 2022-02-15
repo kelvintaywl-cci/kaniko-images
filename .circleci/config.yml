@@ -1,0 +1,47 @@
+version: 2.1
+
+defaults:
+  environment: &environment
+    DOCKER_REGISTRY: docker.io
+    DOCKER_USER: kelvintaywlcircleci
+
+jobs:
+  build_image:
+    environment:
+      <<: *environment
+    docker:
+      - image: cimg/base:stable
+    parameters:
+      dockerfile:
+        type: string
+      image_name:
+        type: string
+        default: 'circleci-kaniko'
+      image_tag:
+        type: string
+    steps:
+      - checkout
+      - setup_remote_docker:
+          # https://circleci.com/docs/2.0/building-docker-images/#docker-version
+          version: 20.10.7
+      - run:
+          name: Build image
+          command: |
+            docker image build --tag "${DOCKER_REGISTRY}/${DOCKER_USER}/<< parameters.image_name >>:${CIRCLE_SHA1}" .
+            docker image tag "${DOCKER_REGISTRY}/${DOCKER_USER}/<< parameters.image_name >>:${CIRCLE_SHA1}" "${DOCKER_REGISTRY}/${DOCKER_USER}/<< parameters.image_name >>:<< parameters.image_tag >>"
+      - run:
+          name: Publish image
+          command: |
+            # login credentials should be provided via context or project environment variables.
+            echo $DOCKER_PASSWORD | docker login $DOCKER_REGISTRY --username $DOCKER_LOGIN --password-stdin
+            docker image push --all-tags "${DOCKER_REGISTRY}/${DOCKER_USER}/<< parameters.image_name >>"
+
+workflows:
+  main:
+    jobs:
+      - build_image:
+          image_tag: before
+          dockerfile: 'Dockerfile.before'
+      - build_image:
+          image_tag: after
+          dockerfile: 'Dockerfile.after'
