@@ -6,6 +6,23 @@ defaults:
     DOCKER_USER: kelvintaywlcircleci
 
 jobs:
+  custom_build_from_machine:
+    environment:
+      <<: *environment
+    machine:
+      image:
+    steps:
+      - checkout
+      - run:
+          name: Build Docker image via Kaniko
+          command: |
+            docker run \
+              -v "$(pwd):/workspace" \
+              gcr.io/kaniko-project/executor:latest \
+              --dockerfile sample/Dockerfile \
+              --destination "docker.io/kelvintaywlcircleci/fancy-nginx" \
+              --context dir:///workspace
+
   build_image:
     environment:
       <<: *environment
@@ -39,11 +56,12 @@ jobs:
 workflows:
   main:
     jobs:
-      - build_image:
-          name: build_image_before
-          image_tag: before
-          dockerfile: 'Dockerfile.before'
-      - build_image:
-          name: build_image_after
-          image_tag: after
-          dockerfile: 'Dockerfile.after'
+      - custom_build_from_machine
+      # - build_image:
+      #     name: build_image_before
+      #     image_tag: before
+      #     dockerfile: 'Dockerfile.before'
+      # - build_image:
+      #     name: build_image_after
+      #     image_tag: after
+      #     dockerfile: 'Dockerfile.after'
