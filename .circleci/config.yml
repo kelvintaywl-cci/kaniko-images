@@ -40,8 +40,10 @@ workflows:
   main:
     jobs:
       - build_image:
+          name: build_image_before
           image_tag: before
           dockerfile: 'Dockerfile.before'
       - build_image:
+          name: build_image_after
           image_tag: after
           dockerfile: 'Dockerfile.after'
