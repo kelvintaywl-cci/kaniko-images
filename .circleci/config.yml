@@ -10,7 +10,7 @@ jobs:
     environment:
       <<: *environment
     machine:
-      image:
+      image: ubuntu-2004:202111-02
     steps:
       - checkout
       - run:
