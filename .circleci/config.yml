@@ -16,7 +16,11 @@ jobs:
       - run:
           name: Build Docker image via Kaniko
           command: |
+            # set Docker Hub credentials
+            echo $DOCKER_CONFIG_JSON > docker-config.json
+
             docker run \
+              -v "$(pwd)/docker-config.json:/kaniko/.docker/config.json:ro" \
               -v "$(pwd):/workspace" \
               gcr.io/kaniko-project/executor:latest \
               --dockerfile sample/Dockerfile \
