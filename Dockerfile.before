@@ -1,3 +1,0 @@
-FROM gcr.io/kaniko-project/executor:debug
-
-RUN ["mkdir", "/bin"]
