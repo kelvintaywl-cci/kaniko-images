@@ -35,9 +35,22 @@ jobs:
             # login credentials should be provided via context or project environment variables.
             echo $DOCKER_PASSWORD | docker login $DOCKER_REGISTRY --username $DOCKER_LOGIN --password-stdin
             docker image push --all-tags "${DOCKER_REGISTRY}/${DOCKER_USER}/<< parameters.image_name >>"
+  check_known_hosts:
+    parameters:
+      image:
+        type: string
+    docker:
+      - image: << parameters.image >>
+    steps:
+      - checkout
+      - run:
+          name: Check SSH Known Hosts
+          command: |
+            cat $USER/.ssh/known_hosts
+          shell: /busybox/sh
 
 workflows:
-  main:
+  build_base_images:
     jobs:
       - build_image:
           name: build_image_before
@@ -47,3 +60,11 @@ workflows:
           name: build_image_after
           image_tag: after
           dockerfile: 'Dockerfile.after'
+  use_base_images:
+    jobs:
+      - check_known_hosts:
+          matrix:
+            parameters:
+              image:
+                - "docker.io/kelvintaywlcircleci/circleci-kaniko:before"
+                - "docker.io/kelvintaywlcircleci/circleci-kaniko:after"
