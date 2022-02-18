@@ -59,21 +59,21 @@ jobs:
 
 
 workflows:
-#   build_base_images:
-#     jobs:
-#       - build_image:
-#           name: build_image_before
-#           image_tag: before
-#           dockerfile: 'Dockerfile.before'
-#       - build_image:
-#           name: build_image_after
-#           image_tag: after
-#           dockerfile: 'Dockerfile.after'
-  use_base_images:
+  build_base_images:
     jobs:
-      - check_ssh_known_hosts:
-          matrix:
-            parameters:
-              image:
-                - "docker.io/kelvintaywlcircleci/circleci-kaniko:before"
-                - "docker.io/kelvintaywlcircleci/circleci-kaniko:after"
+      - build_image:
+          name: build_image_before
+          image_tag: before
+          dockerfile: 'Dockerfile.before'
+      - build_image:
+          name: build_image_after
+          image_tag: after
+          dockerfile: 'Dockerfile.after'
+#   use_base_images:
+#     jobs:
+#       - check_ssh_known_hosts:
+#           matrix:
+#             parameters:
+#               image:
+#                 - "docker.io/kelvintaywlcircleci/circleci-kaniko:before"
+#                 - "docker.io/kelvintaywlcircleci/circleci-kaniko:after"
