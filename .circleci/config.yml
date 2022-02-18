@@ -4,6 +4,14 @@ defaults:
   environment: &environment
     DOCKER_REGISTRY: docker.io
     DOCKER_USER: kelvintaywlcircleci
+    
+commands:
+  cat_ssh_known_hosts:
+    steps:
+      - run:
+          name: Check SSH Known Hosts
+          command: |
+            cat /root/.ssh/known_hosts
 
 jobs:
   build_image:
@@ -35,7 +43,7 @@ jobs:
             # login credentials should be provided via context or project environment variables.
             echo $DOCKER_PASSWORD | docker login $DOCKER_REGISTRY --username $DOCKER_LOGIN --password-stdin
             docker image push --all-tags "${DOCKER_REGISTRY}/${DOCKER_USER}/<< parameters.image_name >>"
-  check_known_hosts:
+  check_ssh_known_hosts:
     parameters:
       image:
         type: string
@@ -43,16 +51,10 @@ jobs:
       - image: << parameters.image >>
         entrypoint: /busybox/sh
     steps:
+      - cat_ssh_known_hosts
       - checkout
-      - run:
-          command: |
-            cp /busybox/sh /bin/sh
-          shell: /busybox/sh
-      - run:
-          name: Check SSH Known Hosts
-          command: |
-            cat /root/.ssh/known_hosts
-          shell: /busybox/sh
+      - cat_ssh_known_hosts
+
 
 workflows:
   build_base_images:
@@ -67,7 +69,7 @@ workflows:
           dockerfile: 'Dockerfile.after'
   use_base_images:
     jobs:
-      - check_known_hosts:
+      - check_ssh_known_hosts:
           matrix:
             parameters:
               image:
