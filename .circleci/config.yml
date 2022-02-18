@@ -41,6 +41,7 @@ jobs:
         type: string
     docker:
       - image: << parameters.image >>
+        entrypoint: /busybox/sh
     steps:
       - checkout
       - run:
