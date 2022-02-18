@@ -13,7 +13,6 @@ commands:
           command: |
             cat /root/.ssh/known_hosts || true
             cat ~/.ssh/known_hosts || true
-            whoami
 
 jobs:
   build_image:
@@ -56,6 +55,7 @@ jobs:
       - cat_ssh_known_hosts
       - checkout
       - cat_ssh_known_hosts
+      - run: whoami
 
 
 workflows:
