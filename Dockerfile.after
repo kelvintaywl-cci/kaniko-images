@@ -4,8 +4,7 @@ FROM debian:buster-slim
 
 RUN apt-get -y update && apt-get install -y openssh-client git
 
-ENV HOME /root
-ENV USER root
+USER root
 ENV PATH /usr/local/bin:/kaniko:$PATH
 ENV SSL_CERT_DIR=/kaniko/ssl/certs
 ENV DOCKER_CONFIG /kaniko/.docker/
