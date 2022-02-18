@@ -11,7 +11,7 @@ commands:
       - run:
           name: Check SSH Known Hosts
           command: |
-            cat /root/.ssh/known_hosts
+            cat /root/.ssh/known_hosts || true
 
 jobs:
   build_image:
@@ -67,11 +67,11 @@ workflows:
           name: build_image_after
           image_tag: after
           dockerfile: 'Dockerfile.after'
-  use_base_images:
-    jobs:
-      - check_ssh_known_hosts:
-          matrix:
-            parameters:
-              image:
-                - "docker.io/kelvintaywlcircleci/circleci-kaniko:before"
-                - "docker.io/kelvintaywlcircleci/circleci-kaniko:after"
+#   use_base_images:
+#     jobs:
+#       - check_ssh_known_hosts:
+#           matrix:
+#             parameters:
+#               image:
+#                 - "docker.io/kelvintaywlcircleci/circleci-kaniko:before"
+#                 - "docker.io/kelvintaywlcircleci/circleci-kaniko:after"
